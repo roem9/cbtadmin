@@ -123,4 +123,3 @@ $(document).on('click', 'button', function() {
     else if(val == 'down')
       moveDown(btn.parents('.OrderingField'));
 });
-  

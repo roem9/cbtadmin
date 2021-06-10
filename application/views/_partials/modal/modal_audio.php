@@ -9,12 +9,12 @@
                 <form method="post" action="" enctype="multipart/form-data" class="myform">
                     
                     <div class="form-floating mb-3">
-                        <input type="file" name="file" id="file" class="form-control required">
+                        <input type="file" name="file" id="file" class="form form-control required">
                         <!-- <label for="">File</label> -->
                     </div>
                     
                     <div class="form-floating mb-3">
-                        <input type="text" name="nama_audio" class="form-control required">
+                        <input type="text" name="nama_audio" class="form form-control required">
                         <label for="">Nama Audio</label>
                     </div>
                     
@@ -39,9 +39,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" name="id_audio">
+                <input type="hidden" name="id_audio" class="form">
                 <div class="form-floating mb-3">
-                    <input type="text" name="nama_audio" class="form-control required">
+                    <input type="text" name="nama_audio" class="form form-control required">
                     <label for="">Nama Audio</label>
                 </div>
             </div>

@@ -40,6 +40,30 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="<?= base_url()?>subsoal" id="Subsoal">
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg width="24" height="24">
+                        <use xlink:href="<?= base_url()?>assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-receipt" />
+                    </svg>
+                </span>
+                <span class="nav-link-title">
+                    Sub Soal
+                </span>
+                </a>
+            </li>
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="<?= base_url()?>form" id="Form">
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg width="24" height="24">
+                        <use xlink:href="<?= base_url()?>assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-forms" />
+                    </svg>
+                </span>
+                <span class="nav-link-title">
+                    Form
+                </span>
+                </a>
+            </li> -->
+            <li class="nav-item">
                 <a class="nav-link" href="<?= base_url()?>audio" id="Audio">
                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                     <svg width="24" height="24">

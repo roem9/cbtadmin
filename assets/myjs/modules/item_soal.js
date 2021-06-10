@@ -58,6 +58,8 @@ $(document).on("click", ".addItem, #addItem .btnBack", function(){
     `)
 })
 
+var count_choice = 0;
+
 $(document).on("click", "#addItem .btnNext", function(){
     let form = "#addItem";
     let item = $(form+" input[name='item']:checked").val()
@@ -70,31 +72,60 @@ $(document).on("click", "#addItem .btnNext", function(){
         })
     } else {
         
-        let html = `<input type="text" name="item" value="`+item+`">`;
+        let html = `<input type="hidden" name="item" value="`+item+`">`;
 
         if(item == "soal") {
+            count_choice = 4;
             html += `
                 <div class="mb-3">
                     <textarea name="soal" class='ckeditor' id='form-text'>{no}</textarea>
                 </div>
-                <div class="form-floating mb-3">
-                    <textarea name="pilihan_a" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
-                    <label for="" class="col-form-label">Pilihan A</label>
+                <div class="choice">
+                    <div class="form-floating mb-3">
+                        <textarea name="pilihan[]" class="form-control" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                        <label for="" class="col-form-label">Pilihan A</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea name="pilihan[]" class="form-control" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                        <label for="" class="col-form-label">Pilihan B</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea name="pilihan[]" class="form-control" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                        <label for="" class="col-form-label">Pilihan C</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea name="pilihan[]" class="form-control" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                        <label for="" class="col-form-label">Pilihan D</label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mb-3">
+                    <span>
+                        <button type="button" class="btn btn-sm btn-danger btnRemoveForm me-3">
+                            <svg width="24" height="24">
+                                <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-circle-minus" />
+                            </svg>
+                        </button>
+                    </span>
+                    <span>
+                        <button type="button" class="btn btn-sm btn-success btnAddForm">
+                            <svg width="24" height="24">
+                                <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-circle-plus" />
+                            </svg>
+                        </button>
+                    </span>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea name="pilihan_b" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
-                    <label for="" class="col-form-label">Pilihan B</label>
+                    <select name="choice_jawaban" class="form-control required">
+                        <option value="">Pilih Jawaban</option>
+                        <option value="Pilihan A">Pilihan A</option>
+                        <option value="Pilihan B">Pilihan B</option>
+                        <option value="Pilihan C">Pilihan C</option>
+                        <option value="Pilihan D">Pilihan D</option>
+                    </select>
+                    <label for="">Pilih Jawaban</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea name="pilihan_c" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
-                    <label for="" class="col-form-label">Pilihan C</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <textarea name="pilihan_d" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
-                    <label for="" class="col-form-label">Pilihan D</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <textarea name="jawaban" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                    <textarea name="jawaban" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…" readonly></textarea>
                     <label for="" class="col-form-label">Jawaban</label>
                 </div>
                 <div class="form-floating mb-3">
@@ -186,6 +217,76 @@ $(document).on("click", "#addItem .btnNext", function(){
     }
 })
 
+$(document).on("click", "#addItem .btnRemoveForm", function() {
+    if(count_choice > 2) {
+        count_choice--;
+        $('#addItem .choice').children().last().remove();
+
+        $("#addItem [name='choice_jawaban']").children().last().remove();
+    }
+    else {
+        Swal.fire({
+            icon: "error",
+            title: "Oopss...",
+            text: "Pilihan minimal adalah 2"
+        })
+    }
+})
+
+$(document).on("click", "#addItem .btnAddForm", function() {
+    count_choice++;
+    
+    i = 64 + count_choice;
+    html = `
+            <div class="form-floating mb-3">
+                <textarea name="pilihan[]" class="form-control" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                <label for="" class="col-form-label">Pilihan `+ String.fromCharCode(i) +`</label>
+            </div>`
+    $("#addItem .choice").append(html);
+    $("#addItem [name='choice_jawaban']").append(`<option value='Pilihan `+ String.fromCharCode(i) +`'>Pilihan `+ String.fromCharCode(i) +`</option>`);
+})
+
+$(document).on("click", "#editItem .btnRemoveForm", function() {
+    if(count_choice > 2) {
+        count_choice--;
+        $('#editItem .choice').children().last().remove();
+
+        $("#editItem [name='choice_jawaban']").children().last().remove();
+    }
+    else {
+        Swal.fire({
+            icon: "error",
+            title: "Oopss...",
+            text: "Pilihan minimal adalah 2"
+        })
+    }
+})
+
+$(document).on("click", "#editItem .btnAddForm", function() {
+    count_choice++;
+    
+    i = 64 + count_choice;
+    html = `
+            <div class="form-floating mb-3">
+                <textarea name="pilihan[]" class="form-control" data-bs-toggle="autosize" placeholder="Type something…"></textarea>
+                <label for="" class="col-form-label">Pilihan `+ String.fromCharCode(i) +`</label>
+            </div>`
+    $("#editItem .choice").append(html);
+    $("#editItem [name='choice_jawaban']").append(`<option value='Pilihan `+ String.fromCharCode(i) +`'>Pilihan `+ String.fromCharCode(i) +`</option>`);
+})
+
+$(document).on("change", "#addItem [name='choice_jawaban']", function() {
+    let value = $(this).val();
+    let element = $("#addItem .choice label:contains("+value+")").prev();
+    $("#addItem [name='jawaban']").val(element.val())
+})
+
+$(document).on("change", "#editItem [name='choice_jawaban']", function() {
+    let value = $(this).val();
+    let element = $("#editItem .choice label:contains("+value+")").prev();
+    $("#editItem [name='jawaban']").val(element.val())
+})
+
 $(document).on("click", "#addItem .btnAdd", function(){
     let form = "#addItem";
     let item = $(form+" input[name='item']").val();
@@ -201,13 +302,20 @@ $(document).on("click", "#addItem .btnAdd", function(){
         }).then(function (result) {
             if (result.value) {
     
-                let id_soal = $(form+" input[name='id_soal']").val();
+                let id_sub = $(form+" input[name='id_sub']").val();
                 let tipe_soal = $(form+" input[name='tipe_soal']").val();
                 let soal = CKEDITOR.instances['form-text'].getData();
-                let pilihan_a = $(form+" textarea[name='pilihan_a']").val();
-                let pilihan_b = $(form+" textarea[name='pilihan_b']").val();
-                let pilihan_c = $(form+" textarea[name='pilihan_c']").val();
-                let pilihan_d = $(form+" textarea[name='pilihan_d']").val();
+                let pilihan = "";
+
+                $(form+" [name='pilihan[]']").each(function(){
+                    if($(this).val() != ""){
+                        pilihan += `"`+$(this).val()+`",`;
+                    }
+                });
+
+                // remove last character 
+                pilihan = pilihan.slice(0, -1)
+
                 let jawaban = $(form+" textarea[name='jawaban']").val();
                 let penulisan = $(form+" select[name='penulisan']").val();
     
@@ -222,9 +330,11 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         text: 'lengkapi isi form terlebih dahulu'
                     })
                 } else {
-                    let data_soal = soal+"###"+pilihan_a+"///"+pilihan_b+"///"+pilihan_c+"///"+pilihan_d+"###"+jawaban
-                    let data = {id_soal:id_soal, tipe_soal:tipe_soal, item:item, data_soal:data_soal, penulisan:penulisan};
-                    let result = ajax(url_base+"soal/add_item_soal", "POST", data);
+                    // let data_soal = soal+"###"+pilihan_a+"///"+pilihan_b+"///"+pilihan_c+"///"+pilihan_d+"###"+jawaban;
+                    // let data_soal = `{"soal":"`+soal+`","pilihan":`+pilihan+`,"jawaban":"`+jawaban+`"}`;
+                    let data_soal = `{"soal":"`+soal+`","pilihan":[`+pilihan+`],"jawaban":"`+jawaban+`"}`;
+                    let data = {id_sub:id_sub, tipe_soal:tipe_soal, item:item, data_soal:data_soal, penulisan:penulisan};
+                    let result = ajax(url_base+"subsoal/add_item_soal", "POST", data);
                     if(result == 1){
                         Swal.fire({
                             position: 'center',
@@ -235,7 +345,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         })
 
                         $("#addItem").modal("hide");
-                        load_item(id, soal_tipe)
+                        load_item(id)
                     } else {
                         Swal.fire({
                             position: 'center',
@@ -246,7 +356,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         })
                     }
                 }
-                // console.log(id_soal, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
+                // console.log(id_sub, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
             }
         })
     } else if(item == "petunjuk"){
@@ -260,7 +370,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
         }).then(function (result) {
             if (result.value) {
     
-                let id_soal = $(form+" input[name='id_soal']").val();
+                let id_sub = $(form+" input[name='id_sub']").val();
                 let tipe_soal = $(form+" input[name='tipe_soal']").val();
                 let soal = CKEDITOR.instances['form-text'].getData();
                 let penulisan = $(form+" select[name='penulisan']").val();
@@ -276,8 +386,8 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         text: 'lengkapi isi form terlebih dahulu'
                     })
                 } else {
-                    let data = {id_soal:id_soal, tipe_soal:tipe_soal, item:item, data_soal:soal, penulisan:penulisan};
-                    let result = ajax(url_base+"soal/add_item_soal", "POST", data);
+                    let data = {id_sub:id_sub, tipe_soal:tipe_soal, item:item, data_soal:soal, penulisan:penulisan};
+                    let result = ajax(url_base+"subsoal/add_item_soal", "POST", data);
                     if(result == 1){
                         Swal.fire({
                             position: 'center',
@@ -288,7 +398,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         })
 
                         $("#addItem").modal("hide");
-                        load_item(id, soal_tipe)
+                        load_item(id)
                     } else {
                         Swal.fire({
                             position: 'center',
@@ -299,7 +409,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         })
                     }
                 }
-                // console.log(id_soal, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
+                // console.log(id_sub, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
             }
         })
     } else if(item == "audio"){
@@ -313,7 +423,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
         }).then(function (result) {
             if (result.value) {
     
-                let id_soal = $(form+" input[name='id_soal']").val();
+                let id_sub = $(form+" input[name='id_sub']").val();
                 let tipe_soal = $(form+" input[name='tipe_soal']").val();
                 let audio = $(form+" select[name='audio']").val();
                 let penulisan = "";
@@ -329,8 +439,8 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         text: 'lengkapi isi form terlebih dahulu'
                     })
                 } else {
-                    let data = {id_soal:id_soal, tipe_soal:tipe_soal, item:item, data_soal:audio, penulisan:penulisan};
-                    let result = ajax(url_base+"soal/add_item_soal", "POST", data);
+                    let data = {id_sub:id_sub, tipe_soal:tipe_soal, item:item, data_soal:audio, penulisan:penulisan};
+                    let result = ajax(url_base+"subsoal/add_item_soal", "POST", data);
                     if(result == 1){
                         Swal.fire({
                             position: 'center',
@@ -341,7 +451,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         })
 
                         $("#addItem").modal("hide");
-                        load_item(id, soal_tipe)
+                        load_item(id)
                     } else {
                         Swal.fire({
                             position: 'center',
@@ -352,7 +462,7 @@ $(document).on("click", "#addItem .btnAdd", function(){
                         })
                     }
                 }
-                // console.log(id_soal, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
+                // console.log(id_sub, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
             }
         })
     }
@@ -372,10 +482,10 @@ $(document).on("click", ".hapusItem", function(){
     }).then(function (result) {
         if (result.value) {
             data = {id_item: id_item}
-            let result = ajax(url_base+"soal/hapus_item", "POST", data);
+            let result = ajax(url_base+"subsoal/hapus_item", "POST", data);
 
             if(result == 1){
-                load_item(id, soal_tipe);
+                load_item(id);
                 // ???
                 Swal.fire({
                     position: 'center',
@@ -400,12 +510,13 @@ $(document).on("click", ".editItem", function(){
     
     let id_item = $(this).data("id");
     let data = {id_item:id_item}
-    let result = ajax(url_base+"soal/get_item", "POST", data);
+    let result = ajax(url_base+"subsoal/get_item", "POST", data);
     
     $(form+" input[name='id_item']").val(id_item);
     $(form+" input[name='item']").val(result.item);
 
     if(result.item == "soal") {
+        count_choice = result.pilihan.length;
         if(result.penulisan == "RTL") {
             rtl = "selected";
             ltr = "";
@@ -415,28 +526,53 @@ $(document).on("click", ".editItem", function(){
             ltr = "selected";
         }
 
+        
+        let answer_choice = `<option value="">Pilih Jawaban</option>`;
+        let pilihan = "";
+
+        result.pilihan.forEach((choice, index) => {
+            i = 65 + index;
+            pilihan += `
+            <div class="form-floating mb-3">
+                <textarea name="pilihan[]" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…">`+choice+`</textarea>
+                <label for="" class="col-form-label">Pilihan `+ String.fromCharCode(i) +`</label>
+            </div>`;
+
+            if(choice == result.jawaban) answer_choice += `<option selected value="Pilihan `+ String.fromCharCode(i) +`">Pilihan `+ String.fromCharCode(i) +`</option>`;
+            else answer_choice += `<option value="Pilihan `+ String.fromCharCode(i) +`">Pilihan `+ String.fromCharCode(i) +`</option>`;
+        })
+
         html = `
             <div class="mb-3">
                 <textarea name="soal" class='ckeditor' id='form-text-edit'>`+result.soal+`</textarea>
             </div>
-            <div class="form-floating mb-3">
-                <textarea name="pilihan_a" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…">`+result.pilihan_a+`</textarea>
-                <label for="" class="col-form-label">Pilihan A</label>
+            <div class="choice">
+                `+pilihan+`
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+                <span>
+                    <button type="button" class="btn btn-sm btn-danger btnRemoveForm me-3">
+                        <svg width="24" height="24">
+                            <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-circle-minus" />
+                        </svg>
+                    </button>
+                </span>
+                <span>
+                    <button type="button" class="btn btn-sm btn-success btnAddForm">
+                        <svg width="24" height="24">
+                            <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-circle-plus" />
+                        </svg>
+                    </button>
+                </span>
             </div>
             <div class="form-floating mb-3">
-                <textarea name="pilihan_b" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…">`+result.pilihan_b+`</textarea>
-                <label for="" class="col-form-label">Pilihan B</label>
+                <select name="choice_jawaban" class="form-control required">
+                    <option value="">Pilih Jawaban</option>
+                </select>
+                <label for="">Pilih Jawaban</label>
             </div>
             <div class="form-floating mb-3">
-                <textarea name="pilihan_c" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…">`+result.pilihan_c+`</textarea>
-                <label for="" class="col-form-label">Pilihan C</label>
-            </div>
-            <div class="form-floating mb-3">
-                <textarea name="pilihan_d" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…">`+result.pilihan_d+`</textarea>
-                <label for="" class="col-form-label">Pilihan D</label>
-            </div>
-            <div class="form-floating mb-3">
-                <textarea name="jawaban" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…">`+result.jawaban+`</textarea>
+                <textarea name="jawaban" class="form-control required" data-bs-toggle="autosize" placeholder="Type something…" readonly>`+result.jawaban+`</textarea>
                 <label for="" class="col-form-label">Jawaban</label>
             </div>
             <div class="form-floating mb-3">
@@ -450,6 +586,7 @@ $(document).on("click", ".editItem", function(){
 
         
         $(form+" .modal-body").html(html);
+        $(form+" [name='choice_jawaban']").html(answer_choice);
         CKEDITOR.replace('form-text-edit');
 
     } else if(result.item == "petunjuk"){
@@ -548,10 +685,16 @@ $(document).on("click", "#editItem .btnEdit", function(){
     
                 let id_item = $(form+" input[name='id_item']").val();
                 let soal = CKEDITOR.instances['form-text-edit'].getData();
-                let pilihan_a = $(form+" textarea[name='pilihan_a']").val();
-                let pilihan_b = $(form+" textarea[name='pilihan_b']").val();
-                let pilihan_c = $(form+" textarea[name='pilihan_c']").val();
-                let pilihan_d = $(form+" textarea[name='pilihan_d']").val();
+                
+                let pilihan = "";
+                $(form+" [name='pilihan[]']").each(function(){
+                    if($(this).val() != ""){
+                        pilihan += `"`+$(this).val()+`",`;
+                    }
+                });
+                // remove last character 
+                pilihan = pilihan.slice(0, -1)
+
                 let jawaban = $(form+" textarea[name='jawaban']").val();
                 let penulisan = $(form+" select[name='penulisan']").val();
     
@@ -566,9 +709,10 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         text: 'lengkapi isi form terlebih dahulu'
                     })
                 } else {
-                    let data_soal = soal+"###"+pilihan_a+"///"+pilihan_b+"///"+pilihan_c+"///"+pilihan_d+"###"+jawaban
+                    let data_soal = `{"soal":"`+soal+`","pilihan":[`+pilihan+`],"jawaban":"`+jawaban+`"}`;
+                    // let data_soal = soal+"###"+pilihan_a+"///"+pilihan_b+"///"+pilihan_c+"///"+pilihan_d+"###"+jawaban
                     let data = {id_item:id_item, data_soal:data_soal, penulisan:penulisan};
-                    let result = ajax(url_base+"soal/edit_item", "POST", data);
+                    let result = ajax(url_base+"subsoal/edit_item", "POST", data);
                     if(result == 1){
                         Swal.fire({
                             position: 'center',
@@ -579,7 +723,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         })
 
                         $("#addItem").modal("hide");
-                        load_item(id, soal_tipe)
+                        load_item(id)
                     } else {
                         Swal.fire({
                             position: 'center',
@@ -590,7 +734,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         })
                     }
                 }
-                // console.log(id_soal, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
+                // console.log(id_sub, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
             }
         })
     } else if(item == "petunjuk"){
@@ -620,7 +764,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                     })
                 } else {
                     let data = {id_item:id_item, data_soal:soal, penulisan:penulisan};
-                    let result = ajax(url_base+"soal/edit_item", "POST", data);
+                    let result = ajax(url_base+"subsoal/edit_item", "POST", data);
                     if(result == 1){
                         Swal.fire({
                             position: 'center',
@@ -631,7 +775,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         })
 
                         $("#addItem").modal("hide");
-                        load_item(id, soal_tipe)
+                        load_item(id)
                     } else {
                         Swal.fire({
                             position: 'center',
@@ -642,7 +786,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         })
                     }
                 }
-                // console.log(id_soal, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
+                // console.log(id_sub, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
             }
         })
     } else if(item == "audio"){
@@ -672,7 +816,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                     })
                 } else {
                     let data = {id_item:id_item, data_soal:audio, penulisan:penulisan};
-                    let result = ajax(url_base+"soal/edit_item", "POST", data);
+                    let result = ajax(url_base+"subsoal/edit_item", "POST", data);
                     if(result == 1){
                         Swal.fire({
                             position: 'center',
@@ -683,7 +827,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         })
 
                         $("#addItem").modal("hide");
-                        load_item(id, soal_tipe)
+                        load_item(id)
                     } else {
                         Swal.fire({
                             position: 'center',
@@ -694,7 +838,7 @@ $(document).on("click", "#editItem .btnEdit", function(){
                         })
                     }
                 }
-                // console.log(id_soal, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
+                // console.log(id_sub, tipe_soal, item, soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban, penulisan);
             }
         })
     }
@@ -717,8 +861,9 @@ $(document).on("click", ".saveUrutan", function(){
             })
 
             let data = {id_item:id_item};
-            let result = ajax(url_base+"soal/edit_urutan", "POST", data)
+            let result = ajax(url_base+"subsoal/edit_urutan", "POST", data)
             if(result == 1){
+                load_item(id)
                 Swal.fire({
                     position: 'center',
                     icon: 'success',
@@ -730,5 +875,4 @@ $(document).on("click", ".saveUrutan", function(){
             }
         }
     })
-
 })

@@ -116,6 +116,7 @@ function createTable(data,sno){
                     <div class="tab-content">
                         <div class="tab-pane active show" id="tabs-data-`+index+`">
                             <div>
+                                <h5><b><center>`+data[index].nama_tes+`</center></b></h5>
                                 <p>
                                     <svg width="24" height="24" class="me-2">
                                         <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-info-circle" />

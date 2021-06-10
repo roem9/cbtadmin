@@ -9,15 +9,7 @@
         </a>
     </h1>
     <div class="navbar-nav flex-row order-md-last">
-        <?php if($menu == "Tes") :?>
-            <div class="nav-item dropdown d-md-flex me-1">
-                <a href="#addTes" class="nav-link px-0 addTes" data-bs-toggle="modal" tabindex="-1" aria-label="Show notifications">
-                    <svg width="24" height="24">
-                        <use xlink:href="<?= base_url()?>assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-plus" />
-                    </svg>
-                </a>
-            </div>
-        <?php elseif($menu == "Item") :?>
+        <?php if($menu == "Item") :?>
             <div class="nav-item dropdown d-md-flex me-1">
                 <a href="#addItem" class="nav-link px-0 addItem" data-bs-toggle="modal" tabindex="-1" aria-label="Show notifications">
                     <svg width="24" height="24">
@@ -32,22 +24,6 @@
                     </svg>
                 </a>
             </div>
-        <?php elseif($menu == "Audio") :?>
-            <div class="nav-item dropdown d-md-flex me-1">
-                <a href="#addAudio" class="nav-link px-0 addAudio" data-bs-toggle="modal" tabindex="-1" aria-label="Show notifications">
-                    <svg width="24" height="24">
-                        <use xlink:href="<?= base_url()?>assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-plus" />
-                    </svg>
-                </a>
-            </div>
-        <?php elseif($menu == "Soal") :?>
-            <div class="nav-item dropdown d-md-flex me-1">
-                <a href="#addSoal" class="nav-link px-0 addSoal" data-bs-toggle="modal" tabindex="-1" aria-label="Show notifications">
-                    <svg width="24" height="24">
-                        <use xlink:href="<?= base_url()?>assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-plus" />
-                    </svg>
-                </a>
-            </div>
         <?php endif;?>
         <div class="nav-item dropdown">
         <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
@@ -58,7 +34,7 @@
             </div>
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <a href="#" class="dropdown-item">Settings</a>
+            <a href="#editSetting" class="dropdown-item editSetting" data-bs-toggle="modal">Settings</a>
             <a href="<?= base_url()?>auth/logout" class="dropdown-item">Logout</a>
         </div>
         </div>

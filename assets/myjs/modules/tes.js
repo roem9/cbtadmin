@@ -1,4 +1,4 @@
-// ketika menekan tombol simpan pada modal tambah tes 
+// tambah tes baru
 $("#addTes .btnTambah").click(function(){
     Swal.fire({
         icon: 'question',
@@ -11,14 +11,15 @@ $("#addTes .btnTambah").click(function(){
         if (result.value) {
             let form = "#addTes";
 
-            let tgl_tes = $(form+" input[name='tgl_tes']").val();
-            let tgl_pengumuman = $(form+" input[name='tgl_pengumuman']").val();
-            let id_soal = $(form+" select[name='id_soal']").val();
-            let waktu = $(form+" input[name='waktu']").val();
-            let password = $(form+" input[name='password']").val();
-            let catatan = $(form+" textarea[name='catatan']").val();
+            let formData = {};
+            $(form+" .form").each(function(){
+                formData = Object.assign(formData, {[$(this).attr("name")]: $(this).val()})
+            })
 
-            let eror = required("#addTes");
+            // table 
+            formData = Object.assign(formData, {table: "tes", status: "Berjalan"});
+
+            let eror = required(form);
             
             if( eror == 1){
                 Swal.fire({
@@ -27,12 +28,13 @@ $("#addTes .btnTambah").click(function(){
                     text: 'lengkapi isi form terlebih dahulu'
                 })
             } else {
-                data = {tgl_tes: tgl_tes, tgl_pengumuman: tgl_pengumuman, id_soal: id_soal, waktu: waktu, password: password, catatan: catatan}
-                let result = ajax(url_base+"tes/add_tes", "POST", data);
+                data = formData;
+                let result = ajax(url_base+"tes/add", "POST", data);
 
                 if(result == 1){
-                    loadPagination(0);
+                    loadData();
                     $("#formAddTes").trigger("reset");
+                    $(form).modal("hide");
 
                     Swal.fire({
                         position: 'center',
@@ -53,24 +55,24 @@ $("#addTes .btnTambah").click(function(){
     })
 })
 
-// ketika menekan tombol edit tes 
+// get data tes ketika edit
 $(document).on("click",".editTes", function(){
     let form = "#editTes";
     let id_tes = $(this).data("id");
+
+    console.log(id_tes);
+
     let data = {id_tes: id_tes};
     let result = ajax(url_base+"tes/get_tes", "POST", data);
     
-    $(form+" input[name='id_tes']").val(result.id_tes);
-    $(form+" input[name='tgl_tes']").val(result.tgl_tes);
-    $(form+" input[name='tgl_pengumuman']").val(result.tgl_pengumuman);
-    $(form+" select[name='id_soal']").val(result.id_soal);
-    $(form+" input[name='waktu']").val(result.waktu);
-    $(form+" input[name='password']").val(result.password);
-    $(form+" textarea[name='catatan']").val(result.catatan);
-    $(form+" select[name='status']").val(result.status);
+    $.each(result, function(key, value){
+        $(form+" [name='"+key+"']").val(value)
+    })
+
+    CKEDITOR.instances['form-text-edit'].setData(result.msg)
 })
 
-// ketika menyimpan hasil edit tes 
+// menyimpan hasil edit data
 $("#editTes .btnEdit").click(function(){
     Swal.fire({
         icon: 'question',
@@ -82,15 +84,12 @@ $("#editTes .btnEdit").click(function(){
     }).then(function (result) {
         if (result.value) {
             let form = "#editTes";
-            let id_tes = $(form+" input[name='id_tes']").val();
-            let tgl_tes = $(form+" input[name='tgl_tes']").val();
-            let tgl_pengumuman = $(form+" input[name='tgl_pengumuman']").val();
-            let id_soal = $(form+" select[name='id_soal']").val();
-            let waktu = $(form+" input[name='waktu']").val();
-            let password = $(form+" input[name='password']").val();
-            let catatan = $(form+" textarea[name='catatan']").val();
-            let status = $(form+" select[name='status']").val();
             
+            let formData = {};
+            $(form+" .form").each(function(){
+                formData = Object.assign(formData, {[$(this).attr("name")]: $(this).val()})
+            })
+
             let eror = required(form);
             
             if( eror == 1){
@@ -100,11 +99,14 @@ $("#editTes .btnEdit").click(function(){
                     text: 'lengkapi isi form terlebih dahulu'
                 })
             } else {
-                data = {id_tes: id_tes, tgl_tes: tgl_tes, tgl_pengumuman: tgl_pengumuman, id_soal: id_soal, waktu: waktu, password: password, status: status, catatan: catatan}
-                let result = ajax(url_base+"tes/edit_tes", "POST", data);
+                let soal = CKEDITOR.instances['form-text-edit'].getData();
+                Object.assign(formData, {'msg': soal})
+
+                data = formData;
+                let result = ajax(url_base+"tes/edit", "POST", data);
 
                 if(result == 1){
-                    loadPagination(page);
+                    loadData();
 
                     Swal.fire({
                         position: 'center',
@@ -125,7 +127,7 @@ $("#editTes .btnEdit").click(function(){
     })
 })
 
-// ketika menghapus data tes 
+// menghapus tes
 $(document).on("click", ".hapusTes", function(){
     let id_tes = $(this).data("id");
 
@@ -142,7 +144,7 @@ $(document).on("click", ".hapusTes", function(){
             let result = ajax(url_base+"tes/hapus_tes", "POST", data);
 
             if(result == 1){
-                loadPagination(page);
+                loadData();
 
                 Swal.fire({
                     position: 'center',
@@ -161,3 +163,25 @@ $(document).on("click", ".hapusTes", function(){
         }
     })
 })
+
+// mengubah status tes 
+$(document).on("click", "input[name='id_tes']", function(){
+    let id_tes = $(this).val();
+    if($(this).is(":checked")) data = {id_tes:id_tes, status:'Berjalan'}
+    else if($(this).is(":not(:checked)")) data = {id_tes:id_tes, status:'Selesai'}
+
+    let result = ajax(url_base+"tes/change_status", "POST", data);
+    loadData();
+})
+
+// Clipboard
+var clipboard = new ClipboardJS('.copy');
+
+clipboard.on('success', function(e) {
+    Swal.fire({
+        icon: "success",
+        text: "Berhasil menyalin link",
+        showConfirmButton: false,
+        timer: 1500
+    })
+});

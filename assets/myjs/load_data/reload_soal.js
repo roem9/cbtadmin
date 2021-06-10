@@ -61,6 +61,27 @@ function createTable(data,sno){
         if(data[index].catatan == "") catatan = `tidak ada catatan`
         else catatan = data[index].catatan;
 
+        sesi = `<ul class="list-group mb-3">
+            <li class="list-group-item list-group-item-info">Sesi Soal</li>
+        `;
+        if(data[index].sesi.length != 0){
+            num = 1;
+            data[index].sesi.forEach(function(dataSesi){
+                sesi += `<li class="list-group-item d-flex justify-content-between">
+                        `+num+`. `+dataSesi.nama_sub+`
+                        <a href="javascript:void(0)" class="deleteSesi" data-id="`+dataSesi.id+`">
+                            <svg width="24" height="24" class="text-danger">
+                                <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-trash" />
+                            </svg> 
+                        </a>
+                    </li>`
+                num++;
+            })
+        } else {
+            sesi += `<li class="list-group-item"><center>Sesi Kosong</center></li>`
+        }
+        sesi += `</ul>`;
+
         html += `
         <div class="col-md-4">
             <div class="card">
@@ -120,28 +141,13 @@ function createTable(data,sno){
                             </div>
                         </div>
                         <div class="tab-pane" id="tabs-soal-`+index+`">
+                            `+sesi+`
                             <div class="mb-3">
-                                <a href="`+url_base+`soal/item/listening/`+data[index].link+`" target="_blank" class="btn col-12 btn-sm btn-success">
+                                <a href="#addSesi" data-bs-toggle="modal" class="btn col-12 btn-sm btn-success addSesi" data-id="`+data[index].id_soal+`">
                                     <svg width="24" height="24" class="me-2">
-                                        <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-edit" />
+                                        <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-plus" />
                                     </svg> 
-                                    Soal Listening
-                                </a>
-                            </div>
-                            <div class="mb-3">
-                                <a href="`+url_base+`soal/item/structure/`+data[index].link+`" target="_blank" class="btn col-12 btn-sm btn-success">
-                                    <svg width="24" height="24" class="me-2">
-                                        <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-edit" />
-                                    </svg> 
-                                    Soal Structure
-                                </a>
-                            </div>
-                            <div class="mb-3">
-                                <a href="`+url_base+`soal/item/reading/`+data[index].link+`" target="_blank" class="btn col-12 btn-sm btn-success">
-                                    <svg width="24" height="24" class="me-2">
-                                        <use xlink:href="`+url_base+`assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-edit" />
-                                    </svg> 
-                                    Soal Reading
+                                    Tambah Sesi
                                 </a>
                             </div>
                         </div>

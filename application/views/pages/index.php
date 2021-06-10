@@ -111,6 +111,6 @@
     ?>
 
     <script>
-        activeMenu("<?= $menu?>");
+        $("#Dashboard").addClass("active bg-blue-lt")
     </script>
 <?php $this->load->view("_partials/footer")?>

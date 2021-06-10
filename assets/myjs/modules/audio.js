@@ -5,8 +5,9 @@ $(document).on("click",".editAudio", function(){
     let data = {id_audio: id_audio};
     let result = ajax(url_base+"audio/get_audio", "POST", data);
     
-    $(form+" input[name='id_audio']").val(result.id_audio);
-    $(form+" input[name='nama_audio']").val(result.nama_audio);
+    $.each(result, function(key, value){
+        $(form+" [name='"+key+"']").val(value)
+    })
 })
 
 // ketika menyimpan hasil edit audio 
@@ -21,9 +22,12 @@ $("#editAudio .btnEdit").click(function(){
     }).then(function (result) {
         if (result.value) {
             let form = "#editAudio";
-            let id_audio = $(form+" input[name='id_audio']").val();
-            let nama_audio = $(form+" input[name='nama_audio']").val();
             
+            formData = {};
+            $(form+" .form").each(function(index){
+                formData = Object.assign(formData, {[$(this).attr("name")]: $(this).val()})
+            })
+
             let eror = required(form);
             
             if( eror == 1){
@@ -33,11 +37,10 @@ $("#editAudio .btnEdit").click(function(){
                     text: 'lengkapi isi form terlebih dahulu'
                 })
             } else {
-                data = {id_audio: id_audio, nama_audio: nama_audio}
-                let result = ajax(url_base+"audio/edit_audio", "POST", data);
+                let result = ajax(url_base+"audio/edit_audio", "POST", formData);
 
                 if(result == 1){
-                    reload_data();
+                    loadData()
 
                     Swal.fire({
                         position: 'center',
@@ -75,7 +78,7 @@ $(document).on("click", ".hapusAudio", function(){
             let result = ajax(url_base+"audio/hapus_audio", "POST", data);
 
             if(result == 1){
-                reload_data();
+                loadData()
 
                 Swal.fire({
                     position: 'center',
@@ -161,7 +164,7 @@ $("#addAudio .btnTambah").click(function(){
                                 })
                             }
 
-                            reload_data();
+                            loadData()
 
                         },
                     });

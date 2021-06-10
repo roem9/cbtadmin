@@ -3,7 +3,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Soal extends CI_Controller {
+class Soal extends MY_Controller {
 
     
     public function __construct() {
@@ -11,33 +11,6 @@ class Soal extends CI_Controller {
         $this->load->model("Main_model");
         $this->load->model("Other_model");
         $this->load->model("Soal_model");
-    
-        // Load Pagination library
-        $this->load->library('pagination');
-
-        ini_set('xdebug.var_display_max_depth', '10');
-        ini_set('xdebug.var_display_max_children', '256');
-        ini_set('xdebug.var_display_max_data', '1024');
-        
-        if(!$this->session->userdata('admintoafl')){
-            $this->session->set_flashdata('pesan', '
-                <div class="alert alert-important alert-danger alert-dismissible" role="alert">
-                    <div class="d-flex">
-                        <div>
-                            <svg width="24" height="24" class="alert-icon">
-                                <use xlink:href="'.base_url().'assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-alert-circle" />
-                            </svg>
-                        </div>
-                        <div>
-                            Anda harus login terlebih dahulu
-                        </div>
-                    </div>
-                    <a class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="close"></a>
-                </div>
-            ');
-
-			redirect(base_url("auth"));
-		}
     }
     
     public function index(){
@@ -48,71 +21,26 @@ class Soal extends CI_Controller {
         $data['title'] = "List Soal";
 
         // for modal 
-        $data['modal'] = ["modal_soal"];
+        $data['modal'] = [
+            "modal_soal",
+            "modal_setting"
+        ];
         
         // javascript 
         $data['js'] = [
-            "modules/other.js", 
+            "ajax.js",
+            "function.js",
+            "helper.js",
+            "modules/setting.js",
             "modules/soal.js",
-            "load_data/reload_soal.js",
+            // "load_data/reload_soal.js",
+            "load_data/soal_reload.js",
         ];
 
-        // $this->load->view("pages/soal/list-soal", $data);
-        $this->load->view("pages/soal/list-soal", $data);
-    }
-
-    public function item($item, $id){
-        $soal = $this->Main_model->get_one("soal", ["md5(id_soal)" => $id, "hapus" => 0]);
-        
-        // id soal 
-        $data['id'] = $id;
-
-        if(strtolower($item) == "listening"){
-            // tipe soal 
-            $data['tipe'] = "Listening";
-    
-            // navbar and sidebar
-            // $data['menu'] = "Listening";
-    
-            // for title and header 
-            $data['title'] = "List Listening " . $soal['nama_soal'];
-        } else if(strtolower($item) == "structure"){
-            // tipe soal 
-            $data['tipe'] = "Structure";
-    
-            // navbar and sidebar
-            // $data['menu'] = "Structure";
-    
-            // for title and header 
-            $data['title'] = "List Structure " . $soal['nama_soal'];
-
-        } else if(strtolower($item) == "reading"){
-            // tipe soal 
-            $data['tipe'] = "Reading";
-    
-            // navbar and sidebar
-            // $data['menu'] = "Reading";
-    
-            // for title and header 
-            $data['title'] = "List Reading " . $soal['nama_soal'];
-
-        }
-        
-        $data['menu'] = "Item";
-
-        // for modal 
-        $data['modal'] = ["modal_item_soal"];
-        
-        // javascript 
-        $data['js'] = [
-            "modules/other.js", 
-            "modules/item_soal.js",
-            // "load_data/reload_soal_listening.js",
-            "load_data/reload_item.js",
-        ];
+        $data['sub_soal'] = $this->Main_model->get_all("sub_soal", ["hapus" => 0], "nama_sub");
 
         // $this->load->view("pages/soal/list-soal", $data);
-        $this->load->view("pages/soal/list-item", $data);
+        $this->load->view("pages/soal/list", $data);
     }
 
     public function hasil($id){
@@ -148,12 +76,20 @@ class Soal extends CI_Controller {
         // Get records
         $record = $this->Main_model->get_all_limit("soal", ["hapus" => 0], "tgl_pembuatan", "DESC", $rowno, $rowperpage);
 
-        $users_record = [];
+        $result = [];
 
         foreach ($record as $i => $record) {
-            $users_record[$i] = $record;
-            $users_record[$i]['tgl_pembuatan'] = $this->hari_ini(date("D", strtotime($record['tgl_pembuatan']))) . ", " . $this->tgl_indo(date("d-M-Y", strtotime($record['tgl_pembuatan'])));
-            $users_record[$i]['link'] = md5($record['id_soal']);
+            $result[$i] = $record;
+            $result[$i]['tgl_pembuatan'] = $this->hari_ini(date("D", strtotime($record['tgl_pembuatan']))) . ", " . $this->tgl_indo(date("d-M-Y", strtotime($record['tgl_pembuatan'])));
+            $result[$i]['link'] = md5($record['id_soal']);
+
+            $result[$i]['sesi'] = [];
+            $sesi = $this->Main_model->get_all("sesi_soal", ["id_soal" => $record['id_soal']]);
+            foreach ($sesi as $z => $sesi) {
+                $sesi_soal = $this->Main_model->get_one("sub_soal", ["id_sub" => $sesi['id_sub']]);
+                $result[$i]['sesi'][$z] = $sesi_soal;
+                $result[$i]['sesi'][$z]['id'] = $sesi['id'];
+            }
         }
      
         // Pagination Configuration
@@ -187,30 +123,27 @@ class Soal extends CI_Controller {
     
         // Initialize $data Array
         $data['pagination'] = $this->pagination->create_links();
-        $data['result'] = $users_record;
+        $data['result'] = $result;
         $data['row'] = $rowno;
         $data['total_rows'] = $allcount;
-        $data['total_rows_perpage'] = COUNT($users_record);
+        $data['total_rows_perpage'] = COUNT($result);
     
         echo json_encode($data);
      
     }
     
+    // reload
+        public function loadSoal(){
+            header('Content-Type: application/json');
+            $output = $this->soal->loadSoal();
+            echo $output;
+        }
+    // reload
 
     // add 
         public function add_soal(){
-            $data = [
-                "tgl_pembuatan" => $this->input->post("tgl_pembuatan"),
-                "nama_soal" => $this->input->post("nama_soal"),
-                "catatan" => $this->input->post("catatan"),
-            ];
-
-            $data = $this->Main_model->add_data("soal", $data);
-            if($data){
-                echo json_encode("1");
-            } else {
-                echo json_encode("0");
-            }
+            $data = $this->soal->add_soal();
+            echo json_encode($data);
         }
 
         public function add_item_soal(){
@@ -240,13 +173,23 @@ class Soal extends CI_Controller {
                 echo json_encode(0);
             }
         }
+
+        public function add_sub_soal(){
+            $data = $this->soal->add_sub_soal();
+            echo json_encode($data);
+
+            // $table = $this->input->post("table");
+            // unset($_POST['table']);
+
+            // $query = $this->Main_model->add_data($table, $_POST);
+            // if($query) echo json_encode(1);
+            // else echo json_encode(0);
+        }
     // add 
     
     // get 
         public function get_soal(){
-            $id_soal = $this->input->post("id_soal");
-
-            $data = $this->Main_model->get_one("soal", ["id_soal" => $id_soal]);
+            $data = $this->soal->get_soal();
             echo json_encode($data);
         }
 
@@ -374,8 +317,7 @@ class Soal extends CI_Controller {
             echo json_encode($data);
         }
 
-        public function get_item()
-        {
+        public function get_item(){
             $id_item = $this->input->post("id_item");
             $item = $this->Main_model->get_one("item_soal", ["id_item" => $id_item]);
             
@@ -398,24 +340,17 @@ class Soal extends CI_Controller {
 
             echo json_encode($data);
         }
+
+        public function get_komponen_soal($id){
+            $data = $this->soal->get_komponen_soal($id);
+            echo json_encode($data);
+        }
     // get 
 
     // edit 
         public function edit_soal(){
-            $id_soal = $this->input->post("id_soal");
-            
-            $data = [
-                "tgl_pembuatan" => $this->input->post("tgl_pembuatan"),
-                "nama_soal" => $this->input->post("nama_soal"),
-                "catatan" => $this->input->post("catatan"),
-            ];
-
-            $data = $this->Main_model->edit_data("soal", ["id_soal" => $id_soal], $data);
-            if($data){
-                echo json_encode("1");
-            } else {
-                echo json_encode("0");
-            }
+            $data = $this->soal->edit_soal();
+            echo json_encode($data);
         }
 
         public function edit_item(){
@@ -449,14 +384,8 @@ class Soal extends CI_Controller {
 
     // delete 
         public function hapus_soal(){
-            $id_soal = $this->input->post("id_soal");
-
-            $data = $this->Main_model->edit_data("soal", ["id_soal" => $id_soal], ["hapus" => 1]);
-            if($data){
-                echo json_encode("1");
-            } else {
-                echo json_encode("0");
-            }
+            $data = $this->soal->hapus_soal();
+            echo json_encode($data);
         }
 
         public function hapus_item(){
@@ -479,6 +408,15 @@ class Soal extends CI_Controller {
             } else {
                 echo json_encode("0");
             }
+        }
+
+        public function delete(){
+            $table = $this->input->post("table");
+            unset($_POST['table']);
+
+            $query = $this->Main_model->delete_data($table, $_POST);
+            if($query) echo json_encode(1);
+            else echo json_encode(0);
         }
     // delete
 

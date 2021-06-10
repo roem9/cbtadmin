@@ -733,29 +733,6 @@
         }
         return $data;
     }
-
-    function tgl_indo($tgl){
-        $data = explode("-", $tgl);
-        $hari = $data[0];
-        $bulan = $data[1];
-        $tahun = $data[2];
-
-        if($bulan == "01") $bulan = "Januari";
-        if($bulan == "02") $bulan = "Februari";
-        if($bulan == "03") $bulan = "Maret";
-        if($bulan == "04") $bulan = "April";
-        if($bulan == "05") $bulan = "Mei";
-        if($bulan == "06") $bulan = "Juni";
-        if($bulan == "07") $bulan = "Juli";
-        if($bulan == "08") $bulan = "Agustus";
-        if($bulan == "09") $bulan = "September";
-        if($bulan == "10") $bulan = "Oktober";
-        if($bulan == "11") $bulan = "November";
-        if($bulan == "12") $bulan = "Desember";
-
-        return $hari . " " . $bulan . " " . $tahun;
-    }
-
 ?>
 
 <!DOCTYPE html>
@@ -797,7 +774,7 @@
                 <tr>
                     <td style="padding: 10px"><?= $i+1?></td>
                     <td style="padding: 10px"><?= ucwords(strtolower($respon['nama']))?></td>
-                    <td style="padding: 10px"><?= ucwords(strtolower($respon['t4_lahir'])) . ", " . tgl_indo(date("d-m-Y", strtotime($respon['tgl_lahir'])))?></td>
+                    <td style="padding: 10px"><?= ucwords(strtolower($respon['t4_lahir'])) . ", " . tgl_indo($respon['tgl_lahir'])?></td>
                     <td style="padding: 10px"><?= ucwords(strtolower($respon['alamat']))?></td>
                     <td style="padding: 10px"><?= ucwords(strtolower($respon['alamat_pengiriman']))?></td>
                     <td style="padding: 10px"><?= $respon['no_wa']?></td>

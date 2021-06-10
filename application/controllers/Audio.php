@@ -3,33 +3,13 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Audio extends CI_Controller {
+class Audio extends MY_Controller {
 
     
     public function __construct()
     {
         parent::__construct();
         $this->load->model("Main_model");
-        
-        if(!$this->session->userdata('admintoafl')){
-            $this->session->set_flashdata('pesan', '
-                <div class="alert alert-important alert-danger alert-dismissible" role="alert">
-                    <div class="d-flex">
-                        <div>
-                            <svg width="24" height="24" class="alert-icon">
-                                <use xlink:href="'.base_url().'assets/tabler-icons-1.39.1/tabler-sprite.svg#tabler-alert-circle" />
-                            </svg>
-                        </div>
-                        <div>
-                            Anda harus login terlebih dahulu
-                        </div>
-                    </div>
-                    <a class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="close"></a>
-                </div>
-            ');
-
-			redirect(base_url("auth"));
-		}
     }
     
     public function index(){
@@ -40,16 +20,22 @@ class Audio extends CI_Controller {
         $data['title'] = "List Audio";
 
         // for modal 
-        $data['modal'] = ["modal_audio"];
+        $data['modal'] = [
+            "modal_audio",
+            "modal_setting"
+        ];
         
         // for js 
         $data['js'] = [
-            "modules/other.js", 
+            "ajax.js",
+            "function.js",
+            "helper.js",
+            "modules/setting.js", 
             "modules/audio.js",
-            "load_data/reload_audio.js",
+            "load_data/audio_reload.js",
         ];
 
-        $this->load->view("pages/audio/list-audio", $data);
+        $this->load->view("pages/audio/list", $data);
     }
 
     // ajax 
@@ -60,6 +46,12 @@ class Audio extends CI_Controller {
             }
 
             echo json_encode($data);
+        }
+
+        public function loadAudio(){
+            header('Content-Type: application/json');
+            $output = $this->audio->loadAudio();
+            echo $output;
         }
     // ajax 
 
@@ -155,18 +147,8 @@ class Audio extends CI_Controller {
 
     // edit 
         public function edit_audio(){
-            $id_audio = $this->input->post("id_audio");
-            
-            $data = [
-                "nama_audio" => $this->input->post("nama_audio"),
-            ];
-
-            $data = $this->Main_model->edit_data("audio", ["id_audio" => $id_audio], $data);
-            if($data){
-                echo json_encode("1");
-            } else {
-                echo json_encode("0");
-            }
+            $data = $this->audio->edit_audio();
+            echo json_encode($data);
         }
     // edit 
 

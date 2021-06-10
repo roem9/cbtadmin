@@ -1,11 +1,9 @@
-load_item(id, soal_tipe);
+load_item(id);
 
-function load_item(id, soal_tipe){
-    let data = {id_soal: id, tipe: soal_tipe};
+function load_item(id){
+    let data = {id_sub: id};
 
-    let result = ajax(url_base+"soal/get_all_item_by_tipe", "POST", data);
-    
-    // console.log(result)
+    let result = ajax(url_base+"subsoal/get_all_item", "POST", data);
 
     html = ""
     // result = 1;
@@ -15,15 +13,17 @@ function load_item(id, soal_tipe){
                 
                 if(data.penulisan == "RTL"){
                     soal = `<div dir="rtl" class="mb-3">`+data.data.soal+`</div>`
-                    jawaban = `<div dir="rtl" class="mb-3 text-danger">`+data.data.jawaban+`</div>`
+                    // jawaban = `<div dir="rtl" class="mb-3 text-danger">`+data.data.jawaban+`</div>`
                     pilihan = "";
                     data.data.pilihan.forEach(data_pilihan => {
+                        if(data_pilihan == data.data.jawaban) checked = "checked";
+                        else checked = "disabled"
                         pilihan += `
                             <div class="mb-3">
                                 <div class="form-check">
                                     <div class="text-right" dir="rtl">
                                         <label>
-                                            <input type="radio" disabled>
+                                            <input type="radio" `+checked+`>
                                             `+data_pilihan+`
                                         </label>
                                     </div>
@@ -31,23 +31,27 @@ function load_item(id, soal_tipe){
                             </div>`
                     });
     
-                    item = soal+pilihan+jawaban;
+                    // item = soal+pilihan+jawaban;
+                    item = soal+pilihan;
                 } else {
                     soal = `<div class="mb-3">`+data.data.soal+`</div>`
-                    jawaban = `<div class="mb-3 text-danger">`+data.data.jawaban+`</div>`
+                    // jawaban = `<div class="mb-3 text-danger">`+data.data.jawaban+`</div>`
                     pilihan = "";
                     data.data.pilihan.forEach(data_pilihan => {
+                        if(data_pilihan == data.data.jawaban) checked = "checked";
+                        else checked = "disabled"
                         pilihan += `
                             <div class="mb-3">
                                 <div class="form-check p-0">
                                     <label>
-                                        <input type="radio" disabled>
+                                        <input type="radio" `+checked+`>
                                         `+data_pilihan+`
                                     </label>
                                 </div>
                             </div>`
                     });
-                    item = soal+pilihan+jawaban;
+                    // item = soal+pilihan+jawaban;
+                    item = soal+pilihan;
                 }
 
             } else if(data.item == "petunjuk"){
@@ -97,9 +101,15 @@ function load_item(id, soal_tipe){
                                 </svg>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item editItem" href="#editItem" data-bs-toggle="modal" data-id="`+data.id_item+`">Edit</a>
+                                <a class="dropdown-item editItem" href="#editItem" data-bs-toggle="modal" data-id="`+data.id_item+`">
+                                    `+icon("me-1", "edit")+`
+                                    Edit
+                                </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item hapusItem" href="javascript:void(0)" data-id="`+data.id_item+`">Hapus</a>
+                                <a class="dropdown-item hapusItem" href="javascript:void(0)" data-id="`+data.id_item+`">
+                                    `+icon("me-1", "trash")+`
+                                    Hapus
+                                </a>
                             </div>
                         </div>
                     </div>
